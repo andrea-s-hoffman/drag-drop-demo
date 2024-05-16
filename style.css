@@ -1,11 +1,37 @@
 body {
   background-color: #402727;
+  height: 100vh;
+  margin: 0;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 340px;
+  gap: 30px;
 }
 
 .thing {
-  height: 40px;
-  width: 40px;
+  height: 37px;
+  width: 37px;
   border-radius: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+.grid-outline {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+.snap {
+  transition: all 100ms ease-in;
 }
