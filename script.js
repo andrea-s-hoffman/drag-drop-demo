@@ -91,6 +91,7 @@ const mouseUpHandler = (e) => {
 
 const dragStartHandler = (e) => {
   e.dataTransfer.effectAllowed = "move";
+  targetID = e.target.id;
 };
 
 const dragEnterHandler = (e) => {
@@ -104,8 +105,10 @@ const dragOverHandler = (e) => {
 
 const dropHandler = (e) => {
   e.preventDefault();
+  const div = document.getElementById(targetID);
   div.style.top = e.pageY + "px";
   div.style.left = e.pageX + "px";
+  snapToGrid(e, targetID);
 };
 
 // helper functions --------------------------------------------------------
