@@ -4,14 +4,25 @@ const main = document.querySelector("main");
 
 let move = false;
 let targetID = null;
-const vw = window.innerWidth;
-const vh = window.innerHeight;
+
+// sizing, spacing & color variables
+const innerCircleXYDimensions = 40;
+const outerCircleXYDimensions = 47;
+const gap = 40;
+const gridSize = 5; // 5x5 grid
 const colors = ["#F20505", "#D97E4A", "#F2ECE4", "#8C8665"];
 
-const gridPoints = generateGridCoordinates(vw / 2, vh / 2);
+// screen width x height
+const vw = window.innerWidth;
+const vh = window.innerHeight;
 
-function generateGridCoordinates(centerX, centerY, spacing = 74) {
-  const gridSize = 5; // 5x5 grid
+// create grid coordinates
+const gridPoints = generateGridCoordinates(vw / 2, vh / 2);
+// console.log(gridPoints);
+
+// set up functions -----------------------------------------------------
+function generateGridCoordinates(centerX, centerY) {
+  const spacing = outerCircleXYDimensions + gap;
   const coordinates = [];
   const halfGrid = Math.floor(gridSize / 2);
 
@@ -26,69 +37,63 @@ function generateGridCoordinates(centerX, centerY, spacing = 74) {
   return coordinates;
 }
 
-console.log(gridPoints);
+const buildCirclesHTML = () => {
+  gridPoints.forEach((item, i) => {
+    const outerCircle = document.createElement("div");
+    const innerCircle = document.createElement("div");
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    innerCircle.classList.add("thing");
+    outerCircle.classList.add("grid-outline");
+    const randomX = Math.floor(Math.random() * (vw - 40));
+    const randomY = Math.floor(Math.random() * (vh - 40));
+    innerCircle.style.left = `${randomX}px`;
+    innerCircle.style.top = `${randomY}px`;
+    outerCircle.style.left = `${item.x}px`;
+    outerCircle.style.top = `${item.y}px`;
+    innerCircle.style.backgroundColor = randomColor;
+    innerCircle.style.width = `${innerCircleXYDimensions}px`;
+    innerCircle.style.height = `${innerCircleXYDimensions}px`;
+    outerCircle.style.width = `${outerCircleXYDimensions}px`;
+    outerCircle.style.height = `${outerCircleXYDimensions}px`;
+    outerCircle.style.border = `${randomColor} 2px solid`;
+    innerCircle.id = i;
+    main.append(outerCircle);
+    main.append(innerCircle);
+  });
+};
 
-// gridPoints.forEach((dot) => {
-//   const newDot = document.createElement("div");
-//   newDot.style.width = "1px";
-//   newDot.style.height = "1px";
-//   newDot.style.border = "1px solid black";
-//   newDot.style.position = "absolute";
-//   newDot.style.top = `${dot.y}px`;
-//   newDot.style.left = `${dot.x}px`;
-//   newDot.style.transform = "translate(-50%,-50%)";
-//   main.append(newDot);
-// });
-
-for (let i = 0; i < 25; i++) {
-  const newGridCircle = document.createElement("div");
-  const newThing = document.createElement("div");
-  const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  newThing.classList.add("thing");
-  newGridCircle.classList.add("grid-outline");
-  const randomX = Math.floor(Math.random() * (vw - 40));
-  const randomY = Math.floor(Math.random() * (vh - 40));
-  newThing.style.left = `${randomX}px`;
-  newThing.style.top = `${randomY}px`;
-  newThing.style.backgroundColor = randomColor;
-
-  newThing.id = i;
-  newGridCircle.style.border = `${randomColor} 2px solid`;
-  document.querySelector(".grid").append(newGridCircle);
-  main.append(newThing);
-}
-
-document.addEventListener("mousedown", (e) => {
+// event handlers --------------------------------------------------------
+const mouseDownHandler = (e) => {
   if (e.target.classList.contains("thing")) {
     move = true;
     targetID = e.target.id;
   }
-});
+};
 
-document.addEventListener("mousemove", (e) => {
+const mouseMoveHandler = (e) => {
   const xPos = e.pageX;
   const yPos = e.pageY;
-  // console.log(xPos, yPos);
   if (move && targetID) {
     const thing = document.getElementById(targetID);
     thing.style.top = `${yPos}px`;
     thing.style.left = `${xPos}px`;
   }
-});
+};
 
-document.addEventListener("mouseup", (e) => {
+const mouseUpHandler = (e) => {
   move = false;
   snapToGrid(e, targetID);
   targetID = null;
-});
+};
 
+// helper functions --------------------------------------------------------
 function snapToGrid(e, targetID) {
   const closestCoordinate = gridPoints.find((xy) => {
     return (
-      xy.x - 17 < e.pageX &&
-      xy.x + 17 > e.pageX &&
-      xy.y - 17 < e.pageY &&
-      xy.y + 17 > e.pageY
+      xy.x - outerCircleXYDimensions / 2 < e.pageX &&
+      xy.x + outerCircleXYDimensions / 2 > e.pageX &&
+      xy.y - outerCircleXYDimensions / 2 < e.pageY &&
+      xy.y + outerCircleXYDimensions / 2 > e.pageY
     );
   });
   if (closestCoordinate) {
@@ -103,3 +108,10 @@ function snapToGrid(e, targetID) {
     }, 101);
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  buildCirclesHTML();
+  document.addEventListener("mousedown", mouseDownHandler);
+  document.addEventListener("mousemove", mouseMoveHandler);
+  document.addEventListener("mouseup", mouseUpHandler);
+});
