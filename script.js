@@ -1,7 +1,9 @@
 "use strict";
 
+// selectors
 const main = document.querySelector("main");
 
+// helper variables for mouse events
 let move = false;
 let targetID = null;
 
@@ -20,7 +22,7 @@ const vh = window.innerHeight;
 const gridPoints = generateGridCoordinates(vw / 2, vh / 2);
 // console.log(gridPoints);
 
-// set up functions -----------------------------------------------------
+// set-up functions -----------------------------------------------------
 function generateGridCoordinates(centerX, centerY) {
   const spacing = outerCircleXYDimensions + gap;
   const coordinates = [];
@@ -90,25 +92,27 @@ const mouseUpHandler = (e) => {
 function snapToGrid(e, targetID) {
   const closestCoordinate = gridPoints.find((xy) => {
     return (
-      xy.x - outerCircleXYDimensions / 2 < e.pageX &&
-      xy.x + outerCircleXYDimensions / 2 > e.pageX &&
-      xy.y - outerCircleXYDimensions / 2 < e.pageY &&
-      xy.y + outerCircleXYDimensions / 2 > e.pageY
+      // checking the outer circle radius against the event coordinate
+      // using pythagorean theorem
+      outerCircleXYDimensions / 2 >=
+      Math.sqrt((xy.x - e.pageX) ** 2 + (xy.y - e.pageY) ** 2)
     );
   });
   if (closestCoordinate) {
-    const circle = document.getElementById(targetID);
-    circle.classList.add("snap");
+    const targetCircle = document.getElementById(targetID);
+    // add animation
+    targetCircle.classList.add("snap");
     setTimeout(() => {
-      circle.style.top = `${closestCoordinate.y}px`;
-      circle.style.left = `${closestCoordinate.x}px`;
+      targetCircle.style.top = `${closestCoordinate.y}px`;
+      targetCircle.style.left = `${closestCoordinate.x}px`;
     }, 1);
     setTimeout(() => {
-      circle.classList.remove("snap");
+      targetCircle.classList.remove("snap");
     }, 101);
   }
 }
 
+// load content
 document.addEventListener("DOMContentLoaded", () => {
   buildCirclesHTML();
   document.addEventListener("mousedown", mouseDownHandler);
