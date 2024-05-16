@@ -48,6 +48,7 @@ const buildCirclesHTML = () => {
     outerCircle.classList.add("grid-outline");
     const randomX = Math.floor(Math.random() * (vw - 40));
     const randomY = Math.floor(Math.random() * (vh - 40));
+    innerCircle.draggable = "true";
     innerCircle.style.left = `${randomX}px`;
     innerCircle.style.top = `${randomY}px`;
     outerCircle.style.left = `${item.x}px`;
@@ -88,6 +89,25 @@ const mouseUpHandler = (e) => {
   targetID = null;
 };
 
+const dragStartHandler = (e) => {
+  e.dataTransfer.effectAllowed = "move";
+};
+
+const dragEnterHandler = (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "none";
+};
+
+const dragOverHandler = (e) => {
+  e.preventDefault();
+};
+
+const dropHandler = (e) => {
+  e.preventDefault();
+  div.style.top = e.pageY + "px";
+  div.style.left = e.pageX + "px";
+};
+
 // helper functions --------------------------------------------------------
 function snapToGrid(e, targetID) {
   const closestCoordinate = gridPoints.find((xy) => {
@@ -115,7 +135,14 @@ function snapToGrid(e, targetID) {
 // load content
 document.addEventListener("DOMContentLoaded", () => {
   buildCirclesHTML();
-  document.addEventListener("mousedown", mouseDownHandler);
-  document.addEventListener("mousemove", mouseMoveHandler);
-  document.addEventListener("mouseup", mouseUpHandler);
+  if (vw >= 768) {
+    document.addEventListener("mousedown", mouseDownHandler);
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
+  } else {
+    document.addEventListener("dragstart", dragStartHandler);
+    document.addEventListener("dragenter", dragEnterHandler);
+    document.addEventListener("dragover", dragOverHandler);
+    document.addEventListener("drop", dropHandler);
+  }
 });
